@@ -13,15 +13,23 @@ import org.apache.tika.language.detect.LanguageResult;
 
 public class core{
 
+  public static void InsertLine(File archivo, String line)throws IOException{
+    if(!archivo.exists()){
+      archivo.createNewFile();
+    }
+      FileWriter fw=new FileWriter(archivo,true);
+      BufferedWriter bw;
+      bw = new BufferedWriter(fw);
+      bw.write(line+"\n");
+      bw.close();
+  }
 
 
   public static String identifyLanguage(String text) throws IOException{
-
-    LanguageDetector identifier=new OptimaizeLangDetector().loadModels();
-    LanguageResult idioma=identifier.detect(text);
-    System.out.print(idioma.getLanguage()+"\n");
-    return idioma.getLanguage();
-
+      LanguageDetector identifier=new OptimaizeLangDetector().loadModels();
+      LanguageResult idioma=identifier.detect(text);
+      //System.out.print(idioma.getLanguage()+"\n");
+      return idioma.getLanguage();
   }
 
   public static void AllMetadata(String f)throws Exception{
@@ -35,16 +43,19 @@ public class core{
 
         parser.parse(is,ch,metadata,parseContext);
         //System.out.println("ch  "+ch.toString());
-        identifyLanguage(ch.toString());
+        String languages=identifyLanguage(ch.toString());
 
-        for(String name : metadata.names()){
-          String valor=metadata.get(name);
-          if(valor!=null){
-            //System.out.println("metadata: "+name+" "+valor);
-          }
-        }
-        //System.out.println("la  "+metadata.get(Metadata.CONTENT_TYPE));
-
+        // for(String name : metadata.names()){
+        //   String valor=metadata.get(name);
+        //   if(valor!=null){
+        //     System.out.println("metadata: "+name+" "+valor);
+        //   }
+        // }
+        System.out.println("la  "+metadata.get(Metadata.CONTENT_ENCODING));
+        String ruta = "solutions/file.csv";
+        File archivo = new File(ruta);
+        String information=metadata.get("title")+"*"+metadata.get(Metadata.CONTENT_TYPE)+"*"+metadata.get(Metadata.CONTENT_ENCODING)+"*"+languages;
+        InsertLine(archivo,information);
   }
 
   public static void WalkFile(String dir)throws Exception{
@@ -63,6 +74,13 @@ public class core{
 
 
   public static void main(String[] args) throws Exception{
+      File fichero = new File("solutions");
+      if (fichero.exists()){
+          File[] files = fichero.listFiles();
+          for (File file : files) {
+            file.delete();
+          }
+      }
       WalkFile(args[0]);
   }
 
