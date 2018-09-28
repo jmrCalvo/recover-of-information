@@ -14,6 +14,9 @@ import org.apache.tika.parser.txt.TXTParser;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.*;
+import javax.swing.*;
+
+
 
 
 public class core{
@@ -38,7 +41,7 @@ public class core{
   }
 
   public static void separation(String f, String name_file)throws Exception{
-    
+
     if(name_file == null || name_file == "")
     {
 	name_file = "Archivo sin Nombre";
@@ -50,6 +53,9 @@ public class core{
     Map<String, Integer> wordmaps = new HashMap<String, Integer>();
 
     for (String part : parts){
+        part=part.replaceAll(" ","");
+        part=part.replaceAll("\n","");
+        part=part.replaceAll("\t","");
         if(wordmaps.containsKey(part)){
             //esta
             wordmaps.put(part,wordmaps.get(part)+1);
@@ -82,7 +88,7 @@ public class core{
 
   public static void AllMetadata(String f)throws Exception{
         Tika tika=new Tika(); // Instancia de TIka
-        File file=new File(f); 
+        File file=new File(f);
         InputStream is=new FileInputStream(file); //Guardamos en is el archivo
         Metadata metadata=new Metadata();
         BodyContentHandler ch=new BodyContentHandler(-1); //Contenido del archivo
@@ -100,9 +106,9 @@ public class core{
         //   if(valor!=null){
         //     System.out.println("metadata: "+name+" "+valor);
         //   }
-        // }	
-        System.out.println("la  "+metadata.get(Metadata.CONTENT_ENCODING)); 
-        String ruta = "solutions/file.txt"; //Ruta donde escribir
+        // }
+        System.out.println("la  "+metadata.get(Metadata.CONTENT_ENCODING));
+        String ruta = "solutions/file.csv"; //Ruta donde escribir
         File archivo = new File(ruta); //Abrimos la ruta
         String information=metadata.get("title")+"*"+metadata.get(Metadata.CONTENT_TYPE)+"*"+metadata.get(Metadata.CONTENT_ENCODING)+"*"+languages; //Title, separado por * de Content_type, content_encoding y languages.
 
@@ -110,7 +116,7 @@ public class core{
   }
 
   public static List<String> extractUrls(String text){
-		
+
 	      //System.out.println("Depura1");
 	    List<String> containedUrls = new ArrayList<String>();
 	    String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
@@ -130,7 +136,7 @@ public class core{
   public static void LinksAndOcurrences(String f)throws Exception{
 
         Tika tika=new Tika(); // Instancia de Tika
-        File file=new File(f); 
+        File file=new File(f);
         InputStream is=new FileInputStream(file); //Guardamos en is el archivo
         Metadata metadata=new Metadata();
         BodyContentHandler ch=new BodyContentHandler(-1); //Contenido del archivo
@@ -139,18 +145,18 @@ public class core{
 
       	FileInputStream inputstream = new FileInputStream(new File(f));
       	ParseContext pcontext=new ParseContext();
-	      
+
 	parser.parse(is,ch,metadata,parseContext); // Para el metadato del titulo
         //Text document parser
       	TXTParser TexTParser = new TXTParser();
       	TexTParser.parse(is, ch, metadata,parseContext);
       	String contenidoDocumentos = ch.toString(); //En esta variable tenemos todo el texto del archivo
-	
+
 	String ruta = "solutions/enlaces.txt"; //Ruta donde escribir
         File archivo = new File(ruta); //Abrimos la ruta
-	
+
 	List<String> URLs = extractUrls(contenidoDocumentos);
-	
+
 	if(metadata.get("title")!=null){
 
 	InsertLine(archivo, "/n" + " DOCUMENTO: " + metadata.get("title") + "/n" + "/n"); // Para separarlos por archivo en el txt
@@ -176,13 +182,12 @@ public class core{
                   else{//SI no es un directorio, extraemos sus metadatos y contenido.
 			AllMetadata(file.toString());
 			LinksAndOcurrences(file.toString());
-		  } 
+		  }
               }
           }
   }
 
-  public void plot2d() { //int[] Xaxis, int[] Yaxis
-
+  public static void plot2d() { //int[] Xaxis, int[] Yaxis
 
   };
 
@@ -198,6 +203,7 @@ public class core{
       }
 
       WalkFile(args[0]); //Llamamos a la función para recorrer el path
+
   }
 
 }
