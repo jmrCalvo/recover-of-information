@@ -65,24 +65,35 @@ public class core{
         }
     }
 
-        TreeMap<Integer, String> Ordermap = new TreeMap<>(Comparator.reverseOrder());
+        TreeMap<Integer, List<String>> Ordermap = new TreeMap<>(Comparator.reverseOrder());
 
         Iterator<Map.Entry<String, Integer>> itr = wordmaps.entrySet().iterator();
         while(itr.hasNext()){
              Map.Entry<String, Integer> entry = itr.next();
              //System.out.println("Key = " + entry.getKey() +  ", Value = " + entry.getValue());
-             Ordermap.put(entry.getValue(),entry.getKey());
+             if(Ordermap.containsKey(entry.getValue())){
+               //Ordermap.put(entry.getValue(),entry.getKey());
+               Ordermap.get(entry.getValue()).add(entry.getKey());
+             }
+             else{
+               List lista=new ArrayList();
+               lista.add(entry.getKey());
+               Ordermap.put(entry.getValue(),lista);
+             }
         }
 
-        for(Map.Entry<Integer,String> entry : Ordermap.entrySet()) {
-          Integer key = entry.getKey();
-          String value = entry.getValue();
+        String ruta="solutions/"+name_file.toString()+"_ocurrencias.csv";
+        File archivo = new File(ruta);
 
-          String resultado=value+" "+Integer.toString(key);
-          String ruta="solutions/"+name_file.toString()+"_ocurrencias.txt";
-          File archivo = new File(ruta);
-          InsertLine(archivo,resultado);
-          System.out.println(resultado);
+        for(Map.Entry<Integer,List<String>> entry : Ordermap.entrySet()) {
+          Integer key = entry.getKey();
+          List<String> value = entry.getValue();
+
+          for(String values: value){
+            String resultado=values+" "+Integer.toString(key);
+            InsertLine(archivo,resultado);
+            System.out.println(resultado);
+          }
         }
   }
 
