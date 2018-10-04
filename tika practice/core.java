@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.*;
 import javax.swing.*;
-
+import java.lang.Math;
 
 
 
@@ -40,14 +40,30 @@ public class core{
       return idioma.getLanguage(); // Devuelve idioma
   }
 
+  // public static void escribirDatosGRafica(TreeMap<Integer, List<String>> Ordermap, String name_file)throws Exception
+  // {
+  //       String ruta="solutions/"+name_file.toString()+"_DatosGrafica.csv";
+  //       File archivo = new File(ruta);
+	// int i = 1;
+  //       for(Map.Entry<Integer,List<String>> entry : Ordermap.entrySet()) {
+  //         Integer key = entry.getKey();
+  //         List<String> value = entry.getValue();
+  //
+  //         for(String values: value){
+	//     Double d= new Double(key);
+  //           String resultado= i + " " + Math.log(i) + " " + Math.log(d);
+  //           InsertLine(archivo,resultado);
+	//     i++;
+  //         }
+  //       }
+  // }
+
   public static void separation(String f, String name_file)throws Exception{
 
     if(name_file == null || name_file == "")
     {
 	name_file = "Archivo sin Nombre";
     }
-
-
     String[] parts=f.split(" ");
 
     Map<String, Integer> wordmaps = new HashMap<String, Integer>();
@@ -81,18 +97,22 @@ public class core{
                Ordermap.put(entry.getValue(),lista);
              }
         }
+	//escribirDatosGRafica(Ordermap, name_file.toString());
 
         String ruta="solutions/"+name_file.toString()+"_ocurrencias.csv";
         File archivo = new File(ruta);
 
+        Integer i=1;
         for(Map.Entry<Integer,List<String>> entry : Ordermap.entrySet()) {
+
           Integer key = entry.getKey();
           List<String> value = entry.getValue();
 
           for(String values: value){
-            String resultado=values+" "+Integer.toString(key);
+            String resultado=values+" "+Integer.toString(key)+" "+Math.log10(i)+" "+Math.log10(key);
             InsertLine(archivo,resultado);
-            System.out.println(resultado);
+            System.out.println(i+"  "+resultado);
+            i=i+1;
           }
         }
   }
