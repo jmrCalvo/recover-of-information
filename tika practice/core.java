@@ -40,23 +40,6 @@ public class core{
       return idioma.getLanguage(); // Devuelve idioma
   }
 
-  // public static void escribirDatosGRafica(TreeMap<Integer, List<String>> Ordermap, String name_file)throws Exception
-  // {
-  //       String ruta="solutions/"+name_file.toString()+"_DatosGrafica.csv";
-  //       File archivo = new File(ruta);
-	// int i = 1;
-  //       for(Map.Entry<Integer,List<String>> entry : Ordermap.entrySet()) {
-  //         Integer key = entry.getKey();
-  //         List<String> value = entry.getValue();
-  //
-  //         for(String values: value){
-	//     Double d= new Double(key);
-  //           String resultado= i + " " + Math.log(i) + " " + Math.log(d);
-  //           InsertLine(archivo,resultado);
-	//     i++;
-  //         }
-  //       }
-  // }
 
   public static void separation(String f, String name_file)throws Exception{
 
@@ -97,7 +80,6 @@ public class core{
                Ordermap.put(entry.getValue(),lista);
              }
         }
-	//escribirDatosGRafica(Ordermap, name_file.toString());
 
         String ruta="solutions/"+name_file.toString()+"_ocurrencias.csv";
         File archivo = new File(ruta);
@@ -129,16 +111,9 @@ public class core{
         parser.parse(is,ch,metadata,parseContext);
         String languages=identifyLanguage(ch.toString());
         System.out.println("Debug");
-	separation(ch.toString(),metadata.get("title"));
-	System.out.print("\n"+ parseContext +"\n");
-
-        // for(String name : metadata.names()){
-        //   String valor=metadata.get(name);
-        //   if(valor!=null){
-        //     System.out.println("metadata: "+name+" "+valor);
-        //   }
-        // }
-        System.out.println("la  "+metadata.get(Metadata.CONTENT_ENCODING));
+	      separation(ch.toString(),metadata.get("title"));
+	      //System.out.print("\n"+ parseContext +"\n");
+        //System.out.println("la  "+metadata.get(Metadata.CONTENT_ENCODING));
         String ruta = "solutions/file.csv"; //Ruta donde escribir
         File archivo = new File(ruta); //Abrimos la ruta
         String information=metadata.get("title")+"*"+metadata.get(Metadata.CONTENT_TYPE)+"*"+metadata.get(Metadata.CONTENT_ENCODING)+"*"+languages; //Title, separado por * de Content_type, content_encoding y languages.
@@ -167,7 +142,7 @@ public class core{
   public static void LinksAndOcurrences(String f)throws Exception{
 
         Tika tika=new Tika(); // Instancia de Tika
-        File file=new File(f);
+        File file=new File(f);toString());
         InputStream is=new FileInputStream(file); //Guardamos en is el archivo
         Metadata metadata=new Metadata();
         BodyContentHandler ch=new BodyContentHandler(-1); //Contenido del archivo
@@ -217,10 +192,6 @@ public class core{
               }
           }
   }
-
-  public static void plot2d() { //int[] Xaxis, int[] Yaxis
-
-  };
 
   public static void main(String[] args) throws Exception{
 
