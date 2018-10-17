@@ -5,11 +5,29 @@ import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.shingle.ShingleFilter;
 import org.apache.lucene.analysis.tokenattributes.*;
+import org.apache.lucene.analysis.ru.RussianAnalyzer;
+import org.apache.lucene.analysis.es.SpanishAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import java.util.*;
 import javax.swing.*;
 import java.lang.Math;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+
+import org.apache.tika.Tika;
+import org.apache.tika.parser.*;
+import org.apache.tika.sax.BodyContentHandler;
+import java.net.*;
+import org.apache.tika.metadata.Metadata;
+
+import org.apache.tika.language.LanguageIdentifier;
+import org.apache.tika.language.detect.LanguageDetector;
+import org.apache.tika.langdetect.OptimaizeLangDetector;
+import org.apache.tika.language.detect.LanguageResult;
+import org.apache.tika.parser.txt.TXTParser;
+import org.apache.lucene.analysis.*;
+
+
 
 public class core{
 
@@ -26,9 +44,8 @@ public class core{
 
   }
 
-public static void ToCSV(Map<String, Integer> wordmaps, String filename){
+public static void ToCSV(Map<String, Integer> wordmaps, String filename)throws Exception{
   //if( filename == ""){filename= Math.random().toString();}
-  filename=filename+".csv";
   String ruta="solutions/"+filename+"_ocurrencias.csv";
 
 
@@ -52,15 +69,17 @@ public static void ToCSV(Map<String, Integer> wordmaps, String filename){
   File archivo = new File(ruta);
 
   Integer i=1;
+  InsertLine(archivo,wordmaps.size()+"\n");
   for(Map.Entry<Integer,List<String>> entry : Ordermap.entrySet()) {
 
     Integer key = entry.getKey();
     List<String> value = entry.getValue();
 
+
     for(String values: value){
-      String resultado=values+" "+Integer.toString(key)+" "+Math.log10(i)+" "+Math.log10(key);
+      String resultado=values+" "+Integer.toString(key);
       InsertLine(archivo,resultado);
-      System.out.println(i+"  "+resultado);
+      //System.out.println(i+"  "+resultado);
       i=i+1;
     }
   }
@@ -69,7 +88,7 @@ public static void ToCSV(Map<String, Integer> wordmaps, String filename){
 }
 
 
-  public static void tokenizeString( Analyzer analyzer , String string){
+  public static void tokenizeString( Analyzer analyzer , String string,String name)throws Exception{
     try{
     TokenStream stream=analyzer.tokenStream(null, new StringReader(string));
     CharTermAttribute cAtt=stream.addAttribute(CharTermAttribute.class);
@@ -90,10 +109,8 @@ public static void ToCSV(Map<String, Integer> wordmaps, String filename){
          wordmaps.put(word,1);
        }
    }
+   ToCSV(wordmaps,name);
 
-   for(Map.Entry<String,Integer> entry : wordmaps.entrySet()) {
-      System.out.println(entry);
-   }
 
     stream.end();
       //fin
@@ -102,9 +119,23 @@ public static void ToCSV(Map<String, Integer> wordmaps, String filename){
     }
   }
 
-public static void FirstAnalyzer(String fichero)throws Exception{
-  Analyzer an = new SimpleAnalyzer();
-  tokenizeString(an,fichero);
+public static void FirstAnalyzer(String fichero,String name)throws Exception{
+  // Analyzer an = new SimpleAnalyzer();
+  // tokenizeString(an,fichero,"SA_"+name);
+
+  RussianAnalyzer anRu = new RussianAnalyzer();
+  tokenizeString(anRu,fichero,"RA_"+name);
+
+  Analyzer Wa=new WhitespaceAnalyzer();
+  tokenizeString(Wa,fichero,"WA_"+name);
+  //
+  //
+  SpanishAnalyzer SpA=new SpanishAnalyzer();
+  tokenizeString(SpA,fichero,"SpA_"+name);
+
+
+  EnglishAnalyzer EA=new EnglishAnalyzer();
+  tokenizeString(EA,fichero,"EA"+name);
 }
 
 
@@ -122,10 +153,11 @@ public static void FirstAnalyzer(String fichero)throws Exception{
                       InputStream is=new FileInputStream(file); //Guardamos en is el archivo
                       BodyContentHandler ch=new BodyContentHandler(-1); //Contenido del archivo
                       Metadata metadata=new Metadata();
+		                  ParseContext parseContext=new ParseContext();
                       AutoDetectParser parser=new AutoDetectParser();
                       ///**************************************************AQUI  Como leer un documento
                       parser.parse(is,ch,metadata,parseContext);
-			                 FirstAnalyzer(ch.toString());
+			                 FirstAnalyzer(ch.toString(),metadata.get("title"));// se manda el texto en un String
 		                   }
               }
           }
@@ -133,17 +165,18 @@ public static void FirstAnalyzer(String fichero)throws Exception{
 
 
   public static void main(String[] args) throws Exception{
-    // File fichero = new File("solutions");
-    // if (fichero.exists()){ //Si el fichero que queremos crear ya está creado lo eliminamos
-    //     File[] files = fichero.listFiles();
-    //     for (File file : files) {
-    //       file.delete();
-    //     }
-    // }
-    // WalkFile(args[0]); //Llamamos a la función para recorrer el path
+    File fichero = new File("solutions");
+    if (fichero.exists()){ //Si el fichero que queremos crear ya está creado lo eliminamos
+        File[] files = fichero.listFiles();
+        for (File file : files) {
+          file.delete();
+        }
+    }
+     WalkFile(args[0]); //Llamamos a la función para recorrer el path
+    //Analyzer an= AnalizadorCodigo(); //Este no esta hecho
+    //Analyzer an=new WhitespaceAnalyzer();
+    //tokenizeString(an,"La revolucion empieza por la revolucion de las masas");
 
-    Analyzer an=new WhitespaceAnalyzer();
-    tokenizeString(an,"La revolucion empieza por la revolucion de las masas");
   }
 
 
